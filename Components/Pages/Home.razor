@@ -1,7 +1,18 @@
 ﻿@page "/"
+@using MudBlazor
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Welcome to Ellie's Blazor .NET App</h1>
+
+<MudBreadcrumbs Items="_items"></MudBreadcrumbs>
 
 Welcome to your new app.
+
+
+@code {
+    private List<BreadcrumbItem> _items =
+    [
+        new("Home", href: "#", disabled: true, icon: Icons.Material.Filled.Home),
+    ];
+}
