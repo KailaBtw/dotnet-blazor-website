@@ -1,8 +1,3 @@
-# Deploy Blazor WebAssembly output to GitHub Pages.
-# Works when this repo has a project that publishes static WASM output
-# (either this project after converting to WASM, or a Client project).
-# See docs/DEPLOY_ON_GH_PAGES.md.
-
 name: Deploy to GitHub Pages
 
 on:
@@ -33,20 +28,25 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Publish
+      - name: Publish Blazor WASM
         run: dotnet publish -c Release -o ./publish --no-restore
-        # If you use a separate Client project for WASM, use:
-        # run: dotnet publish Client/Client.csproj -c Release -o ./publish --no-restore
 
-      - name: Ensure static output (WASM)
+      - name: Verify publish output
         run: |
-          if [ ! -f ./publish/index.html ]; then
-            echo "::error::No index.html in publish output. This workflow deploys Blazor WebAssembly. Convert the app to WASM or add a Client project. See docs/DEPLOY_ON_GH_PAGES.md"
+          echo "Listing publish folder:"
+          ls -R ./publish || true
+
+          if [ -f ./publish/wwwroot/index.html ]; then
+            echo "✅ Found ./publish/wwwroot/index.html"
+          elif [ -f ./publish/index.html ]; then
+            echo "✅ Found ./publish/index.html"
+          else
+            echo "::error::Expected index.html in ./publish/wwwroot or ./publish. See docs/DEPLOY_ON_GH_PAGES.md"
             exit 1
           fi
 
-      - name: Fix client-side routing (404 → index.html)
-        run: cp ./publish/index.html ./publish/404.html 2>/dev/null || true
+      - name: Add 404.html for client routing
+        run: cp ./publish/wwwroot/index.html ./publish/wwwroot/404.html 2>/dev/null || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -54,7 +54,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./publish
+          path: ./publish/wwwroot
 
   deploy:
     environment:
