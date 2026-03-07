@@ -26,10 +26,10 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore dotnet-blazor-website.csproj
 
       - name: Publish Blazor WASM
-        run: dotnet publish -c Release -o ./publish --no-restore
+        run: dotnet publish dotnet-blazor-website.csproj -c Release -o ./publish --no-restore
 
       - name: Verify publish output
         run: |

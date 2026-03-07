@@ -10,8 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Exclude Api backend so only the Blazor app is compiled (cross-platform paths) -->
+    <Compile Remove="Api/**" />
+    <Compile Remove="Api\**" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
     <PackageReference Include="MudBlazor" Version="9.0.0" />
   </ItemGroup>
 
