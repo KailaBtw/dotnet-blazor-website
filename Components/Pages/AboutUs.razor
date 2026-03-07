@@ -1,0 +1,93 @@
+@page "/about-us"
+@using MudBlazor
+@using MudBlazor.Charts;
+@using System.Globalization
+@inject HttpClient Http
+
+@attribute [StreamRendering]
+
+<PageTitle>About Us</PageTitle>
+
+<h1>About Us</h1>
+
+<MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+
+We are a competative leader in the pricing data industry.
+
+
+@code {
+
+    private List<BreadcrumbItem> _items =
+    [
+        // Use paths relative to the app base href so this works both locally and on GitHub Pages.
+        new("Home", href: "./", icon: Icons.Material.Filled.Home),
+        new("Pricing Data", href: "pricing-data", disabled: true, icon: Icons.Material.Filled.CurrencyExchange),
+    ];
+
+    private int _index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    private LineChartOptions _options = new LineChartOptions()
+    {
+        XAxisTitle = "Months",
+        YAxisTitle = "Price ($)",
+        YAxisTicks = 6, 
+        MaxNumYAxisTicks = 6,
+        YAxisFormat = "0"
+    };
+
+    private int _height = 350;
+    private bool _matchBoundsToSize = false;
+
+    private List<ChartSeries<double>> _series = new();
+    private string[] _xAxisLabels = Array.Empty<string>();
+    private string? LowestPriceText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadCsvAndBindChartAsync();
+        _options.SeriesDisplayOverrides = new Dictionary<IChartSeries, SeriesDisplayOverride>()
+        {
+            { _series[0], new SeriesDisplayOverride() },
+        };
+    }
+    
+    private async Task LoadCsvAndBindChartAsync()
+    {
+        // CSV is served as a static asset from wwwroot/assets/mock_price_data.csv
+        var csv = await Http.GetStringAsync("assets/mock_price_data.csv");
+        var lines = csv
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(l => l.TrimEnd('\r'))
+            .ToArray();
+
+        var rows = lines
+            .Skip(1)
+            .Select(line => line.Split(',', StringSplitOptions.TrimEntries))
+            .Where(cols => cols.Length >= 6)
+            .Select(cols => new
+            {
+                Date = DateOnly.Parse(cols[0], CultureInfo.InvariantCulture),
+                CurrentPrice = double.Parse(cols[5], CultureInfo.InvariantCulture)
+            })
+            .OrderBy(r => r.Date)
+            .ToList();
+
+        _xAxisLabels = rows.Select(r => r.Date.ToString("MMM", CultureInfo.InvariantCulture)).ToArray();
+        var prices = rows.Select(r => r.CurrentPrice).ToArray();
+        _series = new List<ChartSeries<double>>
+        {
+            new() { Name = "Price", Data = prices }
+        };
+
+        if (rows.Count > 0)
+        {
+            var lowest = rows.MinBy(r => r.CurrentPrice);
+            LowestPriceText = $"Lowest price: ${lowest!.CurrentPrice:F2} on {lowest.Date:MMM d, yyyy}.";
+        }
+
+        _options.SeriesDisplayOverrides = new Dictionary<IChartSeries, SeriesDisplayOverride>
+        {
+            { _series[0], new SeriesDisplayOverride() }
+        };
+    }
+}
