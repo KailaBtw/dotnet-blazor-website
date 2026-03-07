@@ -7,15 +7,15 @@ The GH Pages URL for this repo is:
 `https://<your-username>.github.io/<repo-name>/`
 
 For this project:  
-`https://kailabtw.github.io/dotnet-blazor-website/`
+`https://kailabtw.github.io/dotnet-blazor-price-tracker/`
 
-The app’s `<base href>` in `wwwroot/index.html` is set to:
+The workflow sets the app’s `<base href>` in the published `index.html` to:
 
 ```html
-<base href="/dotnet-blazor-website/" />
+<base href="/dotnet-blazor-price-tracker/" />
 ```
 
-If you ever rename the repo, update that path to match.
+If you ever rename the repo, update that path in `.github/workflows/deploy-gh-pages.yml` to match.
 
 ---
 

@@ -50,7 +50,7 @@ jobs:
 
       - name: Set base href for GitHub Pages
         run: |
-          sed -i 's|<base href="/" />|<base href="/dotnet-blazor-website/" />|g' ./publish/wwwroot/index.html ./publish/wwwroot/404.html
+          sed -i 's|<base href="/" />|<base href="/dotnet-blazor-price-tracker/" />|g' ./publish/wwwroot/index.html ./publish/wwwroot/404.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

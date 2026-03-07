@@ -1,15 +1,43 @@
 # dotnet-blazor-website
 
-A .NET Blazor website (Blazor WebAssembly) with MudBlazor UI, pricing data demo, and sample pages. Built with C# and ASP.NET Core.
-Visit the GitHub Pages site [kailabtw.github.io/dotnet-blazor-website/](https://kailabtw.github.io/dotnet-blazor-website/).
+A .NET Blazor WebAssembly app with MudBlazor UI, pricing data demos, and sample pages.
+
+**Live site:** [kailabtw.github.io/dotnet-blazor-price-tracker/](https://kailabtw.github.io/dotnet-blazor-price-tracker/)
 
 ## Purpose
 
-This project is a Blazor Web App used to explore Blazor layouts, MudBlazor components, and data-driven pages (e.g. Amazon-style price tracking with CSV and charts).
+Blazor layouts, MudBlazor components, and data-driven pages (e.g. Amazon-style price tracking with CSV and charts).
 
-## Architecture
+## GitHub Pages
 
-When running locally with the optional **Api** backend, the Blazor app calls the backend API, which fetches data from the RuneScape Grand Exchange (and optionally the wiki) and caches responses to JSON files on disk.
+Deployed as a **static Blazor WebAssembly** site via `.github/workflows/deploy-gh-pages.yml`.
+
+- **URL:** `https://kailabtw.github.io/dotnet-blazor-price-tracker/`
+- **Setup:** See [docs/DEPLOY_ON_GH_PAGES.md](docs/DEPLOY_ON_GH_PAGES.md) for one-time config and how the workflow works.
+
+## Quickstart (CLI)
+
+**Prerequisites:** [.NET SDK](https://dotnet.microsoft.com/download) (`dotnet --version`).
+
+From the project root:
+
+```bash
+dotnet restore
+dotnet build
+dotnet watch run
+```
+
+Open **http://localhost:5049** (or the URL in the console). Stop with `Ctrl+C`.
+
+More options: [docs/RUN_BLAZOR_CLI.md](docs/RUN_BLAZOR_CLI.md).
+
+---
+
+## Grand Exchange (GE) / Backend
+
+Optional local backend for **RuneScape Grand Exchange** price data. The Blazor app calls the Api; the Api calls the GE (and optionally wiki) and caches responses as JSON on disk. GE features only work when both are running locally; the GitHub Pages site has no backend.
+
+### Architecture
 
 ```mermaid
 flowchart LR
@@ -23,34 +51,12 @@ flowchart LR
   Backend -->|read/write| JSON
 ```
 
-- **Blazor (frontend)**: Runs in the browser; uses a named `HttpClient` ("GeApi") to call the backend at `http://localhost:5041` when both are run locally.
-- **Api (backend)**: ASP.NET Core minimal API; proxies GE catalogue, item detail, and graph endpoints; caches responses under `Api/Data/` as JSON.
-- **GE features** (e.g. price tracking) only work when both the Blazor app and the Api project are running; the GitHub Pages–deployed site has no backend.
+- **Blazor:** Uses a named `HttpClient` ("GeApi") to call the backend at `http://localhost:5041`.
+- **Api:** ASP.NET Core minimal API; proxies GE catalogue, item detail, and graph endpoints; caches under `Api/Data/` as JSON.
 
-## GitHub Pages
+### Run with GE
 
-This app is deployed as a **static Blazor WebAssembly** site to GitHub Pages using the workflow in `.github/workflows/deploy-gh-pages.yml`.  
-Live URL (for this repo name):  
-`https://kailabtw.github.io/dotnet-blazor-website/`
+1. Start the Blazor app: `dotnet watch run` (from project root).
+2. In a second terminal, start the Api: `cd Api && dotnet run` (listens on `http://localhost:5041`).
 
-See **[docs/DEPLOY_ON_GH_PAGES.md](docs/DEPLOY_ON_GH_PAGES.md)** for the one‑time setup and how the workflow works.
-
-## Quickstart (CLI)
-
-You can run the app from the terminal without the VS Code C# extension.
-
-**Prerequisites:** [.NET SDK](https://dotnet.microsoft.com/download) (check with `dotnet --version`).
-
-From the project root:
-
-```bash
-dotnet restore
-dotnet build
-dotnet watch run
-```
-
-Then open **<http://localhost:5049>** (or the URL printed in the console) in a browser. Stop with `Ctrl+C`.
-
-To use the **Grand Exchange price data** features, run the Api backend as well (in a second terminal): `cd Api && dotnet run`. The Api listens on `http://localhost:5041` and caches GE data to `Api/Data/` as JSON.
-
-See **[docs/RUN_BLAZOR_CLI.md](docs/RUN_BLAZOR_CLI.md)** for more CLI options.
+Then use GE price-tracking features in the app.
